@@ -1,0 +1,18 @@
+services:
+  js-backend:
+    build:
+      context: ./backend
+      dockerfile: ../backendDockerfile
+    restart: unless-stopped
+    init: true
+    env_file: ./backend/.env
+    # Exposes the port defined in Dockerfile (EXPOSE 3000)
+    ports:
+      - "3000:3000"
+    # No external dependencies detected; add depends_on here if needed in the future
+    # Add volumes here if persistent data is required
+    # networks: [default]  # Uncomment if you add more services/networks
+
+# No external services (databases, caches, etc.) detected in the project structure or Dockerfile.
+# No volumes section included as there are no persistent data requirements.
+# No custom networks defined as only one service is present.
