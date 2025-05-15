@@ -1,8 +1,8 @@
-import { int, mysqlTable, serial, varchar } from 'drizzle-orm/mysql-core';
+import { mysqlTable, serial, text, json, timestamp } from 'drizzle-orm/mysql-core';
 
-export const usersTable = mysqlTable('users_table', {
-  id: serial().primaryKey(),
-  name: varchar({ length: 255 }).notNull(),
-  age: int().notNull(),
-  email: varchar({ length: 255 }).notNull().unique(),
+export const requestsTable = mysqlTable('requests_table', {
+  id: serial('id').primaryKey(),
+  request: text('request').notNull(),
+  responseJson: json('response_json').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });
