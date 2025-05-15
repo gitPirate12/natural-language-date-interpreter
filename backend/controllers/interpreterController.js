@@ -1,5 +1,5 @@
-import db from '../db/index';
-import { requestsTable } from './db/schema';
+import db from '../db/index.js';
+import { requestsTable } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 import { GoogleGenAI, Type } from "@google/genai";
 import 'dotenv/config';
