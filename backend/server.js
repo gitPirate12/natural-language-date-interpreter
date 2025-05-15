@@ -1,11 +1,12 @@
 import express from "express";
+import cors from "cors";
 import "dotenv/config";
-import interpreterRoutes from "./routes/interpreter.js"; //  Use .js extension
+import interpreterRoutes from "./routes/interpreter.js"; 
 
 const app = express();
-const port = process.env.PORT || 3000; //  Add a default port
-
+const port = process.env.PORT || 3000; 
 // middleware
+app.use(cors());
 app.use(express.json());
 
 app.use((req, res, next) => {
