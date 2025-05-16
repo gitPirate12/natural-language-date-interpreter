@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
@@ -17,6 +17,8 @@ interface RequestData {
 export class RequestService {
 
    private apiUrl = environment.apiUrl;
+    private requestCreatedSource = new Subject<void>();
+    requestCreated$ = this.requestCreatedSource.asObservable();
 
     constructor(private http: HttpClient) { }
 
@@ -40,6 +42,10 @@ export class RequestService {
         return this.http.post(this.apiUrl, { request }).pipe(
             catchError(this.handleError)
         );
+    }
+
+    notifyRequestCreated() {
+        this.requestCreatedSource.next();
     }
 
     private handleError(error: HttpErrorResponse): Observable<any> {
