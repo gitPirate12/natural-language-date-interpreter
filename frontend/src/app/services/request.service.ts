@@ -4,7 +4,7 @@ import { Observable, Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
-interface RequestData {
+export interface RequestData {
   id: number;
   originalRequest: string;
   structuredResponse: string; 
