@@ -2,7 +2,7 @@ import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { RequestData, RequestService } from '../../services/request.service';
 import { DatePipe, CommonModule } from '@angular/common';
-import { environment } from '../../../environments/environment';
+
 import { takeUntil, Subject } from 'rxjs';
 
 interface ApiResponse {
@@ -45,7 +45,10 @@ export class RequestListComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.requestService.getRequests().subscribe({
       next: (data: RequestData[]) => {
-        this.requests = data;
+        this.requests = data.map(request => ({
+          ...request,
+          structuredResponse: this.cleanResponse(request.structuredResponse)
+        }));
         this.loading = false;
       },
       error: (error) => {
@@ -57,5 +60,19 @@ export class RequestListComponent implements OnInit, OnDestroy {
 
   toggleRequest(requestId: number): void {
     this.expandedRequestId = this.expandedRequestId === requestId ? null : requestId;
+  }
+
+  cleanResponse(response: any): any {
+    if (typeof response === 'string') {
+      // Remove escaped quotes and JSON formatting
+      const cleaned = response.replace(/^"+|"+$/g, '').replace(/\\"/g, '"');
+      try {
+        // Try to parse as JSON to handle nested objects
+        return JSON.parse(cleaned);
+      } catch {
+        return cleaned;
+      }
+    }
+    return response;
   }
 }

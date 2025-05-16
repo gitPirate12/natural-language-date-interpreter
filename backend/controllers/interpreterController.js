@@ -42,7 +42,8 @@ const createRequest = async (req, res) => {
   const { request } = req.body;
   const date = new Date();
 
-  const requestText = `interpret natural language date expressions(phrases) like "next Tuesday" or "three weeks from now" into actual calendar dates and return only the actual calendar dates no other text.Todays date is ${date} + ${request}`;
+ const requestText = `Interpret the following phrase as a natural language date expression. If a date can be reasonably inferred, return ONLY the calculated date in YYYY-MM-DD format. If no date can be inferred, return the exact message: "Error: Your request has nothing to do with dates." Today's date is ${date}. Phrase: "${request}"`;
+
   try {
     const aiResponse = await geminiResponse(requestText);
 

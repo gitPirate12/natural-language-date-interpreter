@@ -67,8 +67,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.requestText = data.request;
       this.response = data.response;
       
-      // The request creation is already handled by InputFormComponent
-      // The history will update automatically via the requestCreated$ observable
     } catch (err) {
       this.error = 'Failed to process response';
       console.error('Response processing error:', err);
