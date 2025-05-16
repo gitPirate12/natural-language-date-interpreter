@@ -23,4 +23,16 @@
     </button>
     <div *ngIf="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</div>
   </form>
+
+  <div *ngIf="response" class="mt-6 p-4 bg-gray-100 rounded-md border border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-800 mb-2">Response:</h3>
+    <p>
+      <span class="font-medium">Date:</span>
+      <span class="text-gray-700">{{ response.date }}</span>
+    </p>
+    <p>
+      <span class="font-medium">Request:</span>
+      <span class="text-gray-700">{{ response.request }}</span>
+    </p>
+  </div>
 </div>

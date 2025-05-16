@@ -1,5 +1,18 @@
-<div *ngIf="loading" class="text-gray-700 text-center py-4">Loading requests...</div>
-<div *ngIf="error" class="text-red-500 text-center py-4">Error: {{ error }}</div>
-
-<app-input-form></app-input-form>
-<app-request-list [requests]="requests"></app-request-list>
+<div class="container mx-auto p-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div>
+      <app-input-form (formSubmit)="onSubmit($event)"></app-input-form>
+      <div *ngIf="response">
+        <p>Original Request:</p>
+        <pre>{{ requestText }}</pre>
+        <p>Response:</p>
+        <pre>{{response | json}}</pre>
+      </div>
+    </div>
+    <div>
+      <app-request-list [requests]="requests" (requestsChanged)="onRequestsChanged($event)"></app-request-list>
+    </div>
+  </div>
+  <div *ngIf="loading" class="text-gray-700 text-center py-4">Loading requests...</div>
+  <div *ngIf="error" class="text-red-500 text-center py-4">Error: {{ error }}</div>
+</div>

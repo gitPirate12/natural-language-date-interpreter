@@ -1,14 +1,24 @@
 <div class="bg-white rounded-lg shadow-md p-6">
   <h2 class="text-xl font-semibold text-gray-800 mb-4">Request History</h2>
-  <div *ngIf="requests && requests.length > 0; else noRequests" class="space-y-4">
+  <div *ngIf="loading" class="text-gray-700 text-center py-4">Loading requests...</div>
+  <div *ngIf="error" class="text-red-500 text-center py-4">Error: {{ error }}</div>
+
+  <div *ngIf="!loading && !error && requests && requests.length > 0" class="space-y-4">
     <div *ngFor="let request of requests" class="border-b border-gray-200 pb-4">
-      <p><strong class="font-semibold text-gray-700">Request:</strong> <span class="text-gray-900">{{ request.originalRequest }}</span></p>
-      <p><strong class="font-semibold text-gray-700">Response:</strong></p>
-      <pre class="bg-gray-100 p-2 rounded text-sm font-mono whitespace-pre-wrap">{{ request.structuredResponse }}</pre>
-      <p><strong class="font-semibold text-gray-700">Created At:</strong> <span class="text-gray-900">{{ request.createdAt | date }}</span></p>
+      <div
+        class="cursor-pointer text-blue-600 hover:text-blue-800"
+        (click)="toggleRequest(request.id)"
+      >
+        Request: {{ request.originalRequest }}
+      </div>
+      <div *ngIf="expandedRequestId === request.id" class="mt-2">
+        <p><strong class="font-semibold text-gray-700">Response:</strong></p>
+        <pre class="bg-gray-100 p-2 rounded text-sm font-mono whitespace-pre-wrap">{{ request.structuredResponse | json }}</pre>
+        <p><strong class="font-semibold text-gray-700">Created At:</strong> <span class="text-gray-900">{{ request.createdAt | date }}</span></p>
+      </div>
     </div>
   </div>
-  <ng-template #noRequests>
-    <p class="text-gray-500">No requests found.</p>
-  </ng-template>
+  <div *ngIf="!loading && !error && (!requests || requests.length === 0)" class="text-gray-500">
+    No requests found.
+  </div>
 </div>

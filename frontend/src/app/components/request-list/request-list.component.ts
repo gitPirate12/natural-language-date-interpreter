@@ -1,28 +1,28 @@
-
-import { Component, Input, OnInit } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Component, Input, OnInit, Output, EventEmitter, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { RequestData } from '../../services/request.service';
 import { DatePipe, CommonModule } from '@angular/common';
-import { environment } from '../../../environments/environment'; 
+import { environment } from '../../../environments/environment';
 
-interface ApiResponse { 
+interface ApiResponse {
   data: RequestData[];
   message: string;
 }
 
 @Component({
   selector: 'app-request-list',
-  imports: [DatePipe, CommonModule, HttpClientModule],
+  standalone: true,
+  imports: [CommonModule, DatePipe],
   templateUrl: './request-list.component.html',
-  styleUrl: './request-list.component.scss'
+  styleUrls: ['./request-list.component.scss'],
 })
-export class RequestListComponent  implements OnInit {
-  requests: RequestData[] = [];
+export class RequestListComponent implements OnInit {
+  @Input() requests: RequestData[] = [];
+  @Output() requestsChanged = new EventEmitter<RequestData[]>();
   loading = false;
   error: string | null = null;
-  expandedRequestId: number | null = null; // To track expanded request
-
-  constructor(private http: HttpClient) {} // Inject HttpClient
+  expandedRequestId: number | null = null;
+  private http = inject(HttpClient);
 
   ngOnInit(): void {
     this.fetchRequests();
@@ -30,16 +30,17 @@ export class RequestListComponent  implements OnInit {
 
   fetchRequests(): void {
     this.loading = true;
-    this.http.get<ApiResponse>(environment.apiUrl).subscribe( 
-      (response) => {
+    this.http.get<ApiResponse>(environment.apiUrl).subscribe({
+      next: (response) => {
         this.requests = response.data;
+        this.requestsChanged.emit(this.requests); 
         this.loading = false;
       },
-      (error) => {
+      error: (error) => {
         this.error = error.message || 'Failed to fetch requests';
         this.loading = false;
-      }
-    );
+      },
+    });
   }
 
   toggleRequest(requestId: number): void {
