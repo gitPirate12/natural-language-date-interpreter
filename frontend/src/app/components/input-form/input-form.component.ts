@@ -1,82 +1,82 @@
-import { Component, Output, EventEmitter, OnDestroy, Injectable } from '@angular/core'; 
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Component, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
-
-interface ApiResponse {
-  date: string;
-  request: string;
-}
-
-@Injectable({ 
-  providedIn: 'root',
-})
-export class RequestService {
-  
-  requestCreated$ = new Subject<void>();
-
-  notifyRequestCreated() {
-    this.requestCreated$.next();
-  }
-
-  createRequest(requestText: string) {
-    const apiUrl = 'http://localhost:3000/api/requests';
-    return this.http.post<ApiResponse>(apiUrl, { request: requestText });
-  }
-
-  constructor(private http: HttpClient) {}
-}
+import { RequestService } from '../../services/request.service';
 
 @Component({
   selector: 'app-input-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './input-form.component.html',
   styleUrls: ['./input-form.component.scss']
 })
 export class InputFormComponent implements OnDestroy {
-  loading = false;
-  errorMessage: string = '';
-  private destroy$ = new Subject<void>();
-  @Output() formSubmit = new EventEmitter<{ request: string; response: ApiResponse }>();
-  response: ApiResponse | null = null;
-  private apiUrl = 'http://localhost:3000/api/requests';
+  @Output() formSubmit = new EventEmitter<{ 
+    request: string; 
+    response: any 
+  }>();
 
-  constructor(private http: HttpClient, private requestService: RequestService) { }
+  // Component property for two-way binding
+  request: string = '';
+  loading = false;
+  errorMessage: string | null = null;
+  private destroy$ = new Subject<void>();
+
+  constructor(private requestService: RequestService) {}
+
+  onSubmit(form: NgForm) {
+    if (form.invalid || this.loading) {
+      return;
+    }
+
+    const requestText = this.request.trim(); // Get value from component property
+    if (!requestText) {
+      this.errorMessage = 'Please enter a valid date request';
+      return;
+    }
+
+    this.loading = true;
+    this.errorMessage = null;
+
+    this.requestService.createRequest(requestText)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (newRequest) => {
+          try {
+            const response = typeof newRequest.structuredResponse === 'string' 
+              ? JSON.parse(newRequest.structuredResponse) 
+              : newRequest.structuredResponse;
+
+            this.formSubmit.emit({
+              request: requestText,
+              response
+            });
+
+            this.requestService.notifyRequestCreated();
+            this.request = ''; // Clear the input
+            form.resetForm();
+          } catch (error) {
+            this.handleError('Failed to parse server response');
+          }
+        },
+        error: (error) => {
+          this.handleError(error.message || 'Failed to process request');
+        },
+        complete: () => {
+          this.loading = false;
+        }
+      });
+  }
+
+  private handleError(message: string): void {
+    this.errorMessage = message;
+    this.loading = false;
+    console.error('InputForm Error:', message);
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
-  onSubmit(form: NgForm) {
-    if (form.invalid) {
-      return;
-    }
-
-    this.loading = true;
-    this.errorMessage = '';
-    this.response = null;
-    const requestText = form.value.request;
-
-    this.requestService.createRequest(requestText)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          console.log('Request created:', response);
-          this.response = response;
-          this.formSubmit.emit({ request: requestText, response: response });
-          this.loading = false;
-          this.requestService.notifyRequestCreated();
-          form.resetForm();
-        },
-        error: (error) => {
-          this.errorMessage = error.message;
-          this.loading = false;
-          console.error('Error creating request:', error);
-        }
-      });
-  }
 }
-

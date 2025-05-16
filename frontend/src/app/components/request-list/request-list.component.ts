@@ -1,8 +1,9 @@
-import { Component, Input, OnInit, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { RequestData } from '../../services/request.service';
+import { RequestData, RequestService } from '../../services/request.service';
 import { DatePipe, CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
+import { takeUntil, Subject } from 'rxjs';
 
 interface ApiResponse {
   data: RequestData[];
@@ -16,24 +17,35 @@ interface ApiResponse {
   templateUrl: './request-list.component.html',
   styleUrls: ['./request-list.component.scss'],
 })
-export class RequestListComponent implements OnInit {
+export class RequestListComponent implements OnInit, OnDestroy {
   @Input() requests: RequestData[] = [];
-  @Output() requestsChanged = new EventEmitter<RequestData[]>();
   loading = false;
   error: string | null = null;
   expandedRequestId: number | null = null;
   private http = inject(HttpClient);
+  private destroy$ = new Subject<void>();
+
+  constructor(private requestService: RequestService) { }
 
   ngOnInit(): void {
     this.fetchRequests();
+    this.requestService.requestCreated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.fetchRequests();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   fetchRequests(): void {
     this.loading = true;
-    this.http.get<ApiResponse>(environment.apiUrl).subscribe({
-      next: (response) => {
-        this.requests = response.data;
-        this.requestsChanged.emit(this.requests); 
+    this.requestService.getRequests().subscribe({
+      next: (data: RequestData[]) => {
+        this.requests = data;
         this.loading = false;
       },
       error: (error) => {
