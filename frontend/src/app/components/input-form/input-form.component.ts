@@ -2,11 +2,12 @@ import { Component, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { RequestService } from '../../services/request.service'; 
 import { NgForm, FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-input-form',
   standalone: true,
-  imports: [FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './input-form.component.html',
   styleUrl: './input-form.component.scss'
 })

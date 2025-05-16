@@ -21,34 +21,43 @@ const geminiResponse = async (request) => {
       model: "gemini-2.0-flash",
       contents: `${request}`,
     });
-    //console.log(response.text);
+    console.log(response.text);
 
-    return response;
+    const text = response.text;
+    const cleanedText = text
+      .replace(/\*\s*/g, "") // Remove asterisks
+      .replace(/\$\\boxed\{[^}]*\}\$/g, "") // Remove \\boxed{...}
+      .replace(/\n/g, " ") // Replace newlines with spaces
+      .replace(/\*\*/g, "") // Remove Markdown bold
+      .replace(/\s+/g, " ") // Normalize spaces
+      .trim();
+
+    return cleanedText;
   } catch (error) {
     console.error("Error generating Gemini response:", error);
     throw error;
   }
 };
 const createRequest = async (req, res) => {
-  const { request: requestText } = req.body;
+  const { request } = req.body;
+  const date = new Date();
 
+  const requestText = `interpret natural language date expressions(phrases) like "next Tuesday" or "three weeks from now" into actual calendar dates and return only the actual calendar dates no other text.Todays date is ${date} + ${request}`;
   try {
     const aiResponse = await geminiResponse(requestText);
 
     await db
       .insert(requestsTable)
-      .values({ request: requestText, response: JSON.stringify(aiResponse) });
+      .values({ request, response: JSON.stringify(aiResponse) });
     console.log("New request created!");
-    return res
-      .status(200)
-      .json({ message: "Request created successfully", data: aiResponse });
+    return res.status(200).json({ date: aiResponse, request: request });
   } catch (error) {
     console.error("Error processing request:", error.message);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
 
-const getRequests = async  (req, res) => {
+const getRequests = async (req, res) => {
   try {
     const requests = await db.select().from(requestsTable);
 

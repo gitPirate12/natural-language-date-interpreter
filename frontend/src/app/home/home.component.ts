@@ -4,10 +4,11 @@ import { takeUntil, Subject } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { InputFormComponent } from '../components/input-form/input-form.component';
 import { RequestListComponent } from '../components/request-list/request-list.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
-  imports: [FormsModule, InputFormComponent, RequestListComponent],
+  imports: [CommonModule, FormsModule, InputFormComponent, RequestListComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
