@@ -48,7 +48,7 @@ const createRequest = async (req, res) => {
   }
 };
 
-const getRequests = async function () {
+const getRequests = async  (req, res) => {
   try {
     const requests = await db.select().from(requestsTable);
 
@@ -61,7 +61,7 @@ const getRequests = async function () {
       data: requests.map((request) => ({
         id: request.id,
         originalRequest: request.request,
-        structuredResponse: request.responseJson,
+        structuredResponse: request.response,
         createdAt: request.createdAt,
       })),
     });
@@ -100,7 +100,7 @@ const getRequest = async (req, res) => {
       data: {
         id: request.id,
         originalRequest: request.request,
-        structuredResponse: request.responseJson,
+        structuredResponse: request.response,
         createdAt: request.createdAt,
       },
     });
