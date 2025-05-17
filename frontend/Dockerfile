@@ -1,14 +1,9 @@
-# Stage 1: Build the Angular app
+# Use a specific version of Node.js for consistency
 FROM node:22.14.0-alpine AS build
 WORKDIR /app
-COPY package*.json ./
+COPY package.json package-lock.json ./
+RUN npm install -g @angular/cli
 RUN npm install
 COPY . .
-RUN npm run build -- --configuration production
-
-# Stage 2: Serve the app with NGINX
-FROM nginx:alpine
-COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 4200
+CMD ["ng", "serve", "--host", "0.0.0.0", "--proxy-config", "proxy.conf.json"]

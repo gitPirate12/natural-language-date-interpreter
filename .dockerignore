@@ -1,10 +1,37 @@
-# Node.js dependencies
+# 1. Version control
+.git/
+.gitignore
+.hg/
+.svn/
+
+# 2. Node.js dependencies and artifacts
 node_modules/
 npm-debug.log
 yarn-debug.log
+yarn-error.log
 
-# Environment and secrets
-.env*
+# 3. Build outputs
+# (Angular/Vite/Node typical build outputs)
+dist/
+build/
+out/
+.angular/cache/
+
+# 4. IDE/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 5. Test and debug artifacts
+test/
+tests/
+coverage/
+*.log
+
+# 6. Environment and secrets
+.env
+.env.*
 *.env
 *.pem
 *.key
@@ -12,41 +39,32 @@ yarn-debug.log
 config.local.*
 *.local.yml
 
-# Version control
-.git/
-.gitignore
-.svn/
-.hg/
-
-# IDE/editor files
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Build and output directories
-dist/
-build/
-out/
+# 7. Temporary files and folders
 tmp/
 temp/
+*.tmp
 .local/
 local/
 
-# Test and debug artifacts
-test/
-tests/
-debug/
-*.log
-
-# Documentation and markdown
-README*
-*.md
+# 8. Documentation and markdown
 docs/
+*.md
+README*
 
-# Temporary files
-*.tmp
-
-# Docker files
+# 9. Docker and Compose files
 Dockerfile*
 docker-compose*
+compose.yaml
+
+# 10. Project-specific cache and config
+*.tsbuildinfo
+.postcssrc.json
+
+# 11. Miscellaneous
+*.conf
+
+# Exclude lock files from ignore (they should be included for reproducible builds)
+# (No pattern for *.lock here)
+
+# Exclude .dockerignore itself from being ignored
+!.dockerignore

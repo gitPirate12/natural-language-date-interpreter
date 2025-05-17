@@ -1,18 +1,50 @@
+version: '3.8'
+
 services:
   js-backend:
     build:
       context: ./backend
-      dockerfile: ../backendDockerfile
+    container_name: js-backend
     restart: unless-stopped
     init: true
     env_file: ./backend/.env
-    # Exposes the port defined in Dockerfile (EXPOSE 3000)
     ports:
       - "3000:3000"
-    # No external dependencies detected; add depends_on here if needed in the future
-    # Add volumes here if persistent data is required
-    # networks: [default]  # Uncomment if you add more services/networks
+    environment:
+      - DRIZZLE_DATABASE_URL=mysql://root:root@db:3306/db
+    depends_on:
+      - db
+    networks:
+      - natural-language-date-interpreter_app-network
 
-# No external services (databases, caches, etc.) detected in the project structure or Dockerfile.
-# No volumes section included as there are no persistent data requirements.
-# No custom networks defined as only one service is present.
+  ts-frontend:
+    build:
+      context: ./frontend
+    container_name: ts-frontend
+    restart: unless-stopped
+    init: true
+    ports:
+      - "4200:4200"
+    networks:
+      - natural-language-date-interpreter_app-network
+
+  db:
+    image: mysql:latest
+    container_name: drizzle-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - natural-language-date-interpreter_app-network
+
+volumes:
+  db-data:
+
+networks:
+  natural-language-date-interpreter_app-network:
+    driver: bridge

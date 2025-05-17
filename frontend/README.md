@@ -54,6 +54,40 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+## Running with Docker
+
+This project includes a Docker setup for building and serving the production build using Nginx.
+
+- **Node.js version:** 22.13.1 (used for building the app)
+- **Nginx version:** 1.27-alpine (serves the built app)
+
+### Build and Run with Docker Compose
+
+To build and run the frontend using Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+This will:
+- Build the Angular app in a Node.js 22.13.1 environment
+- Serve the optimized production build with Nginx
+
+The application will be available at [http://localhost:80](http://localhost:80).
+
+### Ports
+
+- **80:** Exposes the frontend via Nginx (mapped to your host's port 80)
+
+### Environment Variables
+
+- No environment variables are required by default. If you add a `.env` file, you can uncomment the `env_file` line in `docker-compose.yml` to include it.
+
+### Special Configuration
+
+- The container runs as a non-root user for improved security.
+- A custom `nginx.conf` is used to serve the built Angular app.
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
