@@ -9,7 +9,7 @@ A full-stack web application that interprets natural language date expressions a
 | Frontend       | Angular                |
 | Backend        | Node.js + Express      |
 | API            | Google Gemini API      |
-| Database       | MySQL (via Docker)     |
+| Database       | MySQL      |
 | Orchestration  | Docker Compose       |
 
 Setup Instructions
